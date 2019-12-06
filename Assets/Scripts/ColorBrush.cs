@@ -7,8 +7,6 @@ public  class ColorBrush : MonoBehaviour
     public int X;
     public int Y;
     public int color_ID;
-    private Color Color;
-
     public void setColor()
     {
         //set color using ID
