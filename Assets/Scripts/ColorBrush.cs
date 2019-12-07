@@ -11,4 +11,10 @@ public  class ColorBrush : MonoBehaviour
     {
         //set color using ID
     }
+    public void set(int x,int y, int id)
+    {
+        X=x;
+        Y=y;
+        color_ID = id;
+    }
 }

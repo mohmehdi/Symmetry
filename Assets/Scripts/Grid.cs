@@ -28,6 +28,10 @@ public class Grid : MonoBehaviour
         {
             Draw();
         }
+        if (Input.GetMouseButton(1))
+        {
+            Erase();
+        }
     }
     private void GenerateGrid()
     {
@@ -75,15 +79,26 @@ public class Grid : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.GetComponent<ColorBrush>() == null)
-                {
-                    GameObject go = Instantiate(BrushPrefab, BrushPos(hit.point), Quaternion.identity);
-                    go.transform.localScale = cell_Size;
-                    go.transform.SetParent(transform);
-                }
+            if (hit.collider.gameObject.GetHashCode() != this.gameObject.GetHashCode())
+                return;
+
+                GameObject go = Instantiate(BrushPrefab, Vector3.zero, Quaternion.identity);
+                SetBrush(hit.point, ref go);
             }
     }
-    private Vector3 BrushPos(Vector3 position) 
+    private void Erase()
+    {
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.GetComponent<ColorBrush>() != null) 
+            {
+                Destroy(hit.collider.gameObject);
+            }
+        }
+    }
+    private void SetBrush(Vector3 position ,ref GameObject go) 
     {
         Vector3 result;
 
@@ -91,11 +106,16 @@ public class Grid : MonoBehaviour
         position = new Vector3(position.x + transform.localScale.x / 2, position.y + transform.localScale.y / 2) ;
         int x = (int)(position.x / cell_Size.x);
         int y = (int)(position.y / cell_Size.y);
-        Debug.Log(x.ToString() + "  " + y.ToString());
+       // Debug.Log(x.ToString() + "  " + y.ToString());
 
         result = new Vector3(x * cell_Size.x + cell_Size.x / 2, y * cell_Size.y + cell_Size.y / 2, position.z) ;
         result = new Vector3(result.x - transform.localScale.x / 2, result.y - transform.localScale.y / 2);
         result += transform.position;
-        return result;
+
+        go.transform.position = result;
+        go.transform.localScale = cell_Size;
+        go.transform.SetParent(transform);
+
+        go.GetComponent<ColorBrush>().set(x, y, 1);
     }
 }
