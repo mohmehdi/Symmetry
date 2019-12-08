@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 2534173178545147583}
   - component: {fileID: 8893271318845840517}
   - component: {fileID: 8711342235228024018}
-  - component: {fileID: 8274763030064449719}
+  - component: {fileID: 8274763030064449720}
   m_Layer: 0
   m_Name: Brush
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -92,18 +92,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8274763030064449719
-MonoBehaviour:
+--- !u!65 &8274763030064449720
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8274763030064449718}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e13aaa02b1feb7d44b96b002d6b119fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  X: 0
-  Y: 0
-  color_ID: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

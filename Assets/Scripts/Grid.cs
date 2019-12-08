@@ -6,24 +6,30 @@ public class Grid : MonoBehaviour
     public GameObject LinePrefab;
     [SerializeField]
     [Range(10,200)]
-    private float lineSize;
+    private float lineSize=100;
     //................................//
     public int Size { get; set; }   //(Size by 2*Size) rectangle grid
-    public ColorBrush[,] maxtrixBrushes;
+    public int[,] Brushes;
     public GameObject BrushPrefab;
-    private ColorBrush Current;
+    private XY Current= new XY();
     private Vector3 cell_Size; //every cell Size
     private Camera cam;
 
+    struct XY
+    {
+      public int y;
+      public int x;
+    }
     private void Start()
     {
         cam = Camera.main;
         Size = 5;
         GenerateGrid();
+        Brushes = new int[Size,2* Size];
     }
     private void Update()
     {
-        SetBrush(1);
+        SetColor();
         if (Input.GetMouseButton(0))
         {
             Draw();
@@ -32,6 +38,20 @@ public class Grid : MonoBehaviour
         {
             Erase();
         }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < 2*Size; j++)
+                {
+                    Debug.Log(Brushes[i, j]);
+                }
+            }
+        }
+    }
+    public void SetColor()
+    {
+        BrushPrefab.GetComponent<Renderer>().material.color = Color.blue ;
     }
     private void GenerateGrid()
     {
@@ -55,50 +75,39 @@ public class Grid : MonoBehaviour
             go.transform.localScale = new Vector3(go.transform.localScale.x / lineSize,0.5f, go.transform.localScale.z / lineSize);
         }
     }
-    public void SetBrush(int ID)
-    {
-        //select brushes in color pallet adn set it to current
-        //ID=0 is eraser
-        Current = BrushPrefab.GetComponent<ColorBrush>();
-        if (ID==1)
-        {
-            Current.color_ID = 1;
-            Material mat=  BrushPrefab.GetComponent<Renderer>().material;
-            mat.color = Color.blue;
-        }
-        else if(ID==0)
-        {
-            Current.color_ID = 0;
-        }
-    }
 
     private void Draw()
     {
-                                                  //instatiate or destroy game object
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
+        //instatiate or destroy game object
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
             if (hit.collider.gameObject.GetHashCode() != this.gameObject.GetHashCode())
                 return;
 
-                GameObject go = Instantiate(BrushPrefab, Vector3.zero, Quaternion.identity);
-                SetBrush(hit.point, ref go);
-            }
+            GameObject go = Instantiate(BrushPrefab, SetBrush(hit.point), Quaternion.identity);
+
+
+            go.transform.localScale = cell_Size;
+            go.transform.SetParent(transform);
+
+            Brushes[Current.x, Current.y] = 1;
+        }
     }
     private void Erase()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            if (hit.collider.GetComponent<ColorBrush>() != null) 
+            if (hit.collider.CompareTag("Tile"))
             {
                 Destroy(hit.collider.gameObject);
+                SetBrush(hit.point);
+                Brushes[Current.x, Current.y] = 0;
             }
         }
     }
-    private void SetBrush(Vector3 position ,ref GameObject go) 
+    private Vector3 SetBrush(Vector3 position) 
     {
         Vector3 result;
 
@@ -112,10 +121,9 @@ public class Grid : MonoBehaviour
         result = new Vector3(result.x - transform.localScale.x / 2, result.y - transform.localScale.y / 2);
         result += transform.position;
 
-        go.transform.position = result;
-        go.transform.localScale = cell_Size;
-        go.transform.SetParent(transform);
-
-        go.GetComponent<ColorBrush>().set(x, y, 1);
+        Current.x = x;
+        Current.y = y;
+       
+        return result;
     }
 }
