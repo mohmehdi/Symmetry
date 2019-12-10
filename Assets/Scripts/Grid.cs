@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Grid : MonoBehaviour
     public int Size { get; set; }   //(Size by 2*Size) rectangle grid
     public int[,] Brushes;
     public GameObject BrushPrefab;
+    public List<Material> Mats;
+    public int Mat_ID=0;
     private XY Current= new XY();
     private Vector3 cell_Size; //every cell Size
     private Camera cam;
@@ -49,9 +52,34 @@ public class Grid : MonoBehaviour
             }
         }
     }
-    public void SetColor()
+
+    public void set_Mat_ID(int ID)
     {
-        BrushPrefab.GetComponent<Renderer>().material.color = Color.blue ;
+        Mat_ID = ID;
+    }
+    private void SetColor()          //set a material to prefab to draw
+    {
+
+        if (Mat_ID == 0) 
+        {
+        BrushPrefab.GetComponent<Renderer>().material = Mats[0] ;
+        }
+        else if (Mat_ID == 1)
+        {
+            BrushPrefab.GetComponent<Renderer>().material = Mats[1];
+        }
+        else if (Mat_ID == 2)
+        {
+            BrushPrefab.GetComponent<Renderer>().material = Mats[2];
+        }
+        else if (Mat_ID == 3)
+        {
+            BrushPrefab.GetComponent<Renderer>().material = Mats[3];
+        }
+        else if (Mat_ID == 4)
+        {
+            BrushPrefab.GetComponent<Renderer>().material = Mats[4];
+        }
     }
     private void GenerateGrid()
     {
@@ -125,5 +153,13 @@ public class Grid : MonoBehaviour
         Current.y = y;
        
         return result;
+    }
+    public void Load()
+    {
+
+    }
+    public void Save()
+    {
+
     }
 }
