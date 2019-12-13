@@ -28,7 +28,6 @@ public class MGrid : MonoBehaviour
     {
         cam = Camera.main;
         GenerateGrid(5);
-        Tiles = new int[Size,2* Size];
     }
     private void Update()
     {
@@ -37,7 +36,7 @@ public class MGrid : MonoBehaviour
         {
             Draw();
         }
-        if (Input.GetMouseButton(1))
+       else if (Input.GetMouseButton(1))
         {
             Erase();
         }
@@ -47,6 +46,7 @@ public class MGrid : MonoBehaviour
     private void GenerateGrid(int size)      //GenerateGrid using Size and cell_size
     {
         Size = size;
+        Tiles = new int[Size, 2 * Size];
 
         cell_Size = new Vector3(transform.localScale.x / Size, transform.localScale.y / (2 * Size),0.1f); 
         int lenght = 2 * Size;
@@ -117,6 +117,9 @@ public class MGrid : MonoBehaviour
         {
             if (hit.collider.CompareTag("Tile"))
             {
+                if (hit.transform.parent.gameObject.GetHashCode() != this.gameObject.GetHashCode()) //if hit to another object 
+                    return;
+
                 Destroy(hit.collider.gameObject);
                 SetTilePos(hit.point);
                 Tiles[Current.x, Current.y] = 0;
@@ -131,7 +134,7 @@ public class MGrid : MonoBehaviour
         position = new Vector3(position.x + transform.localScale.x / 2, position.y + transform.localScale.y / 2) ;
         int x = (int)(position.x / cell_Size.x);
         int y = (int)(position.y / cell_Size.y);
-       // Debug.Log(x.ToString() + "  " + y.ToString());
+        //Debug.Log(x.ToString() + "  " + y.ToString());
 
         result = new Vector3(x * cell_Size.x + cell_Size.x / 2, y * cell_Size.y + cell_Size.y / 2, position.z) ;
         result = new Vector3(result.x - transform.localScale.x / 2, result.y - transform.localScale.y / 2);
