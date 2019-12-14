@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class MGrid : MonoBehaviour
 {
     //........Grid Line Properties..........//
     public GameObject LinePrefab;
     [SerializeField]
     [Range(10,200)]
-    private float lineSize=100;      
+    private float lineSize=100;
     //.....................................//
-
+    public InputField textInput;
     public int Size { get; set; }   //(Size by 2*Size)  grid
     public int[,] Tiles;          //Data in grid that 0 means empty cell
     public GameObject TilePrefab;
@@ -42,7 +43,14 @@ public class MGrid : MonoBehaviour
         }
        
     }
-
+    public void GenerateUsingInput()
+    {
+        if (int.TryParse(textInput.text, out int n)) 
+        {
+            DeleteGrid();
+            GenerateGrid(n);
+        } 
+    }
     private void GenerateGrid(int size)      //GenerateGrid using Size and cell_size
     {
         Size = size;
