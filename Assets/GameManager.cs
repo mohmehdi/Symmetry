@@ -1,35 +1,115 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private MGrid pad;
+    public static int Level=0;
     public MGrid pattern;
+    public MGrid pad;
+
+    public GameObject path;
+
     private GridData data;
-    private int[,] pattData;
-    private int[,] padData;
 
     //ui elements
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
         data = new GridData();
     }
-    public void LoadLevel(int x)
+    private void Start()
     {
-        //load level by index
-        SceneManager.LoadSceneAsync("Test");
+        LoadLevel();
     }
-    public void SetData_level(int l)
+    public void LoadScene(int level)
     {
-        if (l==1)
+        Level = level; 
+        //load level by index
+        if (level==0)
+        {
+            SceneManager.LoadSceneAsync("Main");
+        }
+        else if (level>=1 && level<=5)
+        {
+            SceneManager.LoadSceneAsync("Levels");
+        }
+        else if (level==-1)
+        {
+            SceneManager.LoadSceneAsync("DrawSave");
+        }
+    }
+    private void LoadLevel()
+    {
+        if (Level != 0)
+        {
+            SetData_level(Level);
+            LoadPattern();
+        }
+    }
+    private void SetData_level(int l)
+    {
+        if (Level == -1)            //DrawSave scene
         {
             data.size = 5;
             //saved data from levelmake sceane
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+
+            //saved data from levelmake sceane
+       else if (Level==1)
+        {
+            data.size = 5;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,4,0,0,0},
+            {0,0,0,0,5,0,0,0,0,0},
+            {0,0,0,0,0,0,5,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+        else if (Level == 2)
+        {
+            data.size = 5;
+            data.grid = new int[,] {
+            {1,1,1,2,3,0,0,0,0,0},
+            {0,0,0,0,0,0,4,0,0,0},
+            {0,0,0,0,5,0,0,0,0,0},
+            {0,0,0,0,0,0,5,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+        else if (Level == 3)
+        {
+            data.size = 5;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,4,0,0,0},
+            {0,0,0,0,5,0,0,0,0,0},
+            {0,0,0,0,0,0,5,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+        else if (Level == 4)
+        {
+            data.size = 5;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,4,0,0,0},
+            {0,0,0,0,5,0,0,0,0,0},
+            {0,0,0,0,0,0,5,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+        else if (Level == 5)
+        {
+            data.size = 5;
             data.grid = new int[,] {
             {0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,4,0,0,0},
@@ -39,7 +119,7 @@ public class GameManager : MonoBehaviour
             };
         }
     }
-    public void Load()
+    private void LoadPattern()
     {
         pattern.DeleteGrid();
         pattern.GenerateGrid(data.size);
@@ -67,7 +147,31 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
-        //pattern.enabled = false;
+        if (Level != -1)
+        {
+             pattern.enabled = false;
+        }
+    }
+    public void Check()
+    {
+        AnimatePlane();
+        pad.enabled = false;
+        int count = 0;
+        for (int i = 0; i < data.size; i++)
+        {
+            for (int j = 0; j < data.size*2; j++)
+            {
+                if (data.grid[i,j] == pad.Tiles[i,j])
+                {
+                    count++;
+                }
+            }
+        }
+        float percent = (float) count / (data.size * (data.size*2) ) ;
+        Debug.Log(percent);
+    }
+    private void AnimatePlane()
+    {
+        pad.gameObject.transform.SetParent(path.transform);
     }
 }

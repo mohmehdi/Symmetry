@@ -11,4 +11,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Makelevel_Dev.unity
     guid: 301d7701a3591444cb6c9812911d8d06
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: cb2c0032dccd2ae438774dbd692ba958
+  - enabled: 1
+    path: Assets/Scenes/Levels.unity
+    guid: b0f45acbd8829fc44aff70f8d09154aa
+  - enabled: 1
+    path: Assets/Scenes/DrawSave.unity
+    guid: fd329ff03adc31840aa7cc7ec7e00f45
   m_configObjects: {}

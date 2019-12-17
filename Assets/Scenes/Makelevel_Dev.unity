@@ -1906,7 +1906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LinePrefab: {fileID: 6465472825311178970, guid: a1978a795c9a0224087619e6ebd96dd2,
     type: 3}
-  lineSize: 200
+  lineSize: 500
   textInput: {fileID: 2028621243}
   TilePrefab: {fileID: 8274763030064449718, guid: f374079647e8399499d03b319df4c83c,
     type: 3}

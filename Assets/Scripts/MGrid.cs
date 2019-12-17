@@ -8,7 +8,7 @@ public class MGrid : MonoBehaviour
     //........Grid Line Properties..........//
     public GameObject LinePrefab;
     [SerializeField]
-    [Range(10,200)]
+    [Range(10,1500)]
     private float lineSize=100;
     //.....................................//
     public InputField textInput;
