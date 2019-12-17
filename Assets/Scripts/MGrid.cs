@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+
 public class MGrid : MonoBehaviour
 {
     //........Grid Line Properties..........//
@@ -17,7 +18,7 @@ public class MGrid : MonoBehaviour
     public List<Material> Mats;
     public int Mat_ID=0;
     private XY Current= new XY();   //to set objects index
-    private Vector3 cell_Size;      //cell Size to setTilees scale
+    public Vector3 cell_Size;      //cell Size to setTilees scale
     private Camera cam;             //refrence to main camera
 
     struct XY
@@ -43,6 +44,25 @@ public class MGrid : MonoBehaviour
         }
        
     }
+    public void SaveLevelData_Dev()   //to make levels data : size and tiles matrix >> save as txt to use in gamemanager
+    {
+        string path = "E:\\unity projects\\Symmetry\\LevelSave.txt";
+
+        File.Create(path).Close();
+        string builder = "";
+        for (int i = 0; i < Size; i++)
+        {
+            builder += "{";
+            for (int j = 0; j < 2*Size; j++)
+            {
+                builder += Tiles[i, j].ToString() + ",";
+            }
+            builder = builder.Remove(builder.LastIndexOf(','));
+            builder += "},\r\n";
+        }
+        builder = builder.Remove(builder.LastIndexOf(','));
+        File.WriteAllText(path, builder);
+    }
     public void GenerateUsingInput()
     {
         if (int.TryParse(textInput.text, out int n)) 
@@ -51,12 +71,12 @@ public class MGrid : MonoBehaviour
             GenerateGrid(n);
         } 
     }
-    private void GenerateGrid(int size)      //GenerateGrid using Size and cell_size
+    public void GenerateGrid(int size)      //GenerateGrid using Size and cell_size
     {
         Size = size;
         Tiles = new int[Size, 2 * Size];
 
-        cell_Size = new Vector3(transform.localScale.x / Size, transform.localScale.y / (2 * Size),0.1f); 
+        cell_Size = new Vector3(transform.localScale.x / Size, transform.localScale.y / (2 * Size),0.01f); 
         int lenght = 2 * Size;
         for (int i = 0; i <= lenght; i++)                   //make horizontal lines (_cylanders_)
         {
@@ -78,7 +98,7 @@ public class MGrid : MonoBehaviour
     {
         Mat_ID = ID;
     }
-    private void SetTileMatColor()         //set a material to prefab to draw
+    public void SetTileMatColor()         //set a material to prefab to draw
     {
 
         if (Mat_ID == 1) 
@@ -153,7 +173,7 @@ public class MGrid : MonoBehaviour
        
         return result;
     }
-    private void DeleteGrid()               //delete lines and tiles
+    public void DeleteGrid()               //delete lines and tiles
     {
         foreach (Transform line in transform) 
         {

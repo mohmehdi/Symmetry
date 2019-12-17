@@ -25,7 +25,6 @@ public static class GridSaveControler
         {
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
-
             GridData data = formatter.Deserialize(stream) as GridData;
             stream.Close();
 
