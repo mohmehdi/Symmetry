@@ -9,6 +9,11 @@ public class GameManager : MonoBehaviour
     public MGrid pattern;
     public MGrid pad;
 
+     public  Animator corner1;
+     public  Animator corner2;
+    public GameObject BTN_Panel;
+    public GameObject Level_Select_Panel;
+
     public GameObject path;
 
     private GridData data;
@@ -22,23 +27,50 @@ public class GameManager : MonoBehaviour
     {
         LoadLevel();
     }
+    private void Delay()
+    {
+            BTN_Panel.SetActive(false);
+            Level_Select_Panel.SetActive(true);
+    }
+    public void PanelLevel(bool flag)
+    {
+        if (flag)
+        {
+            Invoke("Delay", 0.5f);
+            
+             corner1.SetBool("Small", false);
+             corner2.SetBool("Small", false);
+        }
+        else
+        {
+            Level_Select_Panel.SetActive(false);
+            BTN_Panel.SetActive(true);
+            corner1.SetBool("Small", true);
+            corner2.SetBool("Small", true);
+        }
+    }
     public void LoadScene(int level)
     {
-        Level = level; 
+        Level = level;
+
+        Invoke("loadScene",1);
+    }
+    private void loadScene()
+    {
         //load level by index
-        if (level==0)
+        if (Level == 0)
         {
             SceneManager.LoadSceneAsync("Main");
         }
-        else if (level>=1 && level<=5)
+        else if (Level >= 1 && Level <= 5)
         {
             SceneManager.LoadSceneAsync("Levels");
         }
-        else if (level==-1)
+        else if (Level == -1)
         {
             SceneManager.LoadSceneAsync("DrawSave");
         }
-    }
+    } 
     private void LoadLevel()
     {
         if (Level != 0)
@@ -147,9 +179,13 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        levelSpecial();
+    }
+    private void levelSpecial()
+    {
         if (Level != -1)
         {
-             pattern.enabled = false;
+            pattern.enabled = false;
         }
     }
     public void Check()
