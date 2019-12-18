@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
     public MGrid pattern;
     public MGrid pad;
 
+    public Slider Score;
      public  Animator corner1;
      public  Animator corner2;
     public GameObject BTN_Panel;
@@ -187,6 +189,12 @@ public class GameManager : MonoBehaviour
         {
             pattern.enabled = false;
         }
+
+    }
+    public void SetPadActive(bool flag )
+    {
+            pad.GetComponent<MGrid>().enabled = flag;
+            pattern.gameObject.SetActive(!flag);
     }
     public void Check()
     {
@@ -197,7 +205,7 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < data.size*2; j++)
             {
-                if (data.grid[i,j] == pad.Tiles[i,j])
+                if (data.grid[i,j] == pad.Tiles[data.size -i -1,j])
                 {
                     count++;
                 }
@@ -205,9 +213,12 @@ public class GameManager : MonoBehaviour
         }
         float percent = (float) count / (data.size * (data.size*2) ) ;
         Debug.Log(percent);
+        Score.value = percent;
+        
     }
+
     private void AnimatePlane()
     {
-        pad.gameObject.transform.SetParent(path.transform);
+       // pad.gameObject.transform.SetParent(path.transform);
     }
 }

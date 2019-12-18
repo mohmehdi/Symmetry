@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using System.Collections;
 
 public class MGrid : MonoBehaviour
 {
@@ -20,7 +21,8 @@ public class MGrid : MonoBehaviour
     private XY Current= new XY();   //to set objects index
     public Vector3 cell_Size;      //cell Size to setTilees scale
     private Camera cam;             //refrence to main camera
-
+    public GameObject particles;
+    Color Color;
     struct XY
     {
       public int y;
@@ -104,24 +106,31 @@ public class MGrid : MonoBehaviour
         if (Mat_ID == 1) 
         {
        TilePrefab.GetComponent<Renderer>().material = Mats[0] ;
+            Color = Mats[0].color;
         }
         else if (Mat_ID == 2)
         {
            TilePrefab.GetComponent<Renderer>().material = Mats[1];
+            Color = Mats[1].color;
         }
         else if (Mat_ID == 3)
         {
            TilePrefab.GetComponent<Renderer>().material = Mats[2];
+            Color = Mats[2].color;
         }
         else if (Mat_ID == 4)
         {
            TilePrefab.GetComponent<Renderer>().material = Mats[3];
+            Color = Mats[3].color;
         }
         else if (Mat_ID == 5)
         {
            TilePrefab.GetComponent<Renderer>().material = Mats[4];
+            Color = Mats[4].color;
         }
     }
+
+    [System.Obsolete]
     private void Draw()                     //instantiateTileprefab to mouse pos
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -131,6 +140,10 @@ public class MGrid : MonoBehaviour
                 return;
 
             GameObject go = Instantiate(TilePrefab, SetTilePos(hit.point), Quaternion.identity);
+
+            GameObject par=  Instantiate(particles, go.transform.position + new Vector3(0,0,-0.1f), Quaternion.identity);
+            par.GetComponent<ParticleSystem>().startColor = Color;
+            Destroy(par, 0.5f);
 
             go.transform.localScale = cell_Size;
             go.transform.SetParent(transform);
@@ -228,4 +241,5 @@ public class MGrid : MonoBehaviour
         MGrid grid = this;
         GridSaveControler.Save(grid);
     }
+
 }
