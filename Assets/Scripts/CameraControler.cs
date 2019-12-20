@@ -8,7 +8,7 @@ public class CameraControler : MonoBehaviour
     public float speed;
     Vector3 Center;
     Camera cam;
-    private float smooth =0.2f;
+   // private float smooth =0.2f;
 
     private void Start()
     {

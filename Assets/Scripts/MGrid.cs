@@ -161,8 +161,15 @@ public class MGrid : MonoBehaviour
                 if (hit.transform.parent.gameObject.GetHashCode() != this.gameObject.GetHashCode()) //if hit to another object 
                     return;
 
+                GameObject par= Instantiate(particles, hit.point, Quaternion.identity);
+                var main = par.GetComponent<ParticleSystem>().main;
+                main.startColor = hit.transform.gameObject.GetComponent<Renderer>().material.color;
+
                 Destroy(hit.collider.gameObject);
+
                 SetTilePos(hit.point);
+
+                Destroy(par, 0.5f);
                 Tiles[Current.x, Current.y] = 0;
             }
         }

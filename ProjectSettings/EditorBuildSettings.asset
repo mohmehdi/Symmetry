@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Makelevel_Dev.unity
     guid: 301d7701a3591444cb6c9812911d8d06
   - enabled: 1

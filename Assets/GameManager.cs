@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Text ThisRecord;
     private int thisRecord=0;
     private int[] record;
+    public Animator pathAnim;
     public GameObject path;
 
     private GridData data;
@@ -75,15 +76,18 @@ public class GameManager : MonoBehaviour
     }
 
     #region Loading level
+  
     private void LoadLevel()
     {
-        if (Level != 0)
+        if (Level > 0)
         {
             SetData_level(Level);
             LoadPattern();
         }
         if (Level <= 5 && Level >= 1)
         {
+            pad.DeleteGrid();
+            pad.GenerateGrid(data.size);
             pad.GetComponent<MGrid>().enabled = false;
             record = SaveStatus.Load().record;
         }
@@ -150,14 +154,21 @@ public class GameManager : MonoBehaviour
         }
         else if (Level == 5)
         {
-            data.size = 5;
-            data.grid = new int[,] {
+            string path = Application.persistentDataPath + "/GridData.save";
+            if (File.Exists(path))
+                data = GridSaveControler.Load();
+            else
+            {
+                data.size = 5;
+                //saved data from levelmake sceane
+                data.grid = new int[,] {
             {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,4,0,0,0},
-            {0,0,0,0,5,0,0,0,0,0},
-            {0,0,0,0,0,0,5,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0}
             };
+            }
         }
     }
     private void LoadPattern()
@@ -194,13 +205,15 @@ public class GameManager : MonoBehaviour
             pattern.transform.SetParent(path.transform);
         }
     }
+
+    
+
     #endregion
     
     public void SetPadActive()
     {
-        //Debug.Log(LookCounter);
-       // SaveStatus.Save(record);
         flag = !flag;
+        pathAnim.SetBool("Look", flag);
         if (flag)
         {
             DrawOrShow.text = "Look";
@@ -212,12 +225,9 @@ public class GameManager : MonoBehaviour
             DrawOrShow.text = "Draw";
         }
             pad.GetComponent<MGrid>().enabled = flag;
-            pattern.gameObject.SetActive(!flag);
     }
     public void Check()
     {
-        // pad.enabled = false;
-
         int count = 0;
         for (int i = 0; i < data.size; i++)
         {
@@ -233,16 +243,20 @@ public class GameManager : MonoBehaviour
         percent = p;
         if (percent == 1)
         {
-            if (thisRecord<record[Level])
+            if (thisRecord<record[Level] || record[Level]==-1)
             {
-            record[Level] = thisRecord;
+                record[Level] = thisRecord;
+                SaveStatus.Save(record);
             }
         }
         StartCoroutine( scoreBar());
     }
     IEnumerator scoreBar()
     {
-        BestRecord.text =record[Level].ToString();
+        if (record[Level]!=-1)
+        {
+            BestRecord.text =record[Level].ToString();
+        }
         ThisRecord.text = thisRecord.ToString();
         while (Mathf.Abs( percent - Score.value) >0.01f)
         {
@@ -292,7 +306,13 @@ public static class SaveStatus
         else
         {
             Debug.LogError("Save not found");
-            return new PlayerStatus {record=new int[5] };
+            int[] tmp = new int[10];
+            for (int i = 0; i < 10; i++)
+            {
+                tmp[i] = -1;
+            }
+            Save(tmp);
+            return new PlayerStatus {record=tmp};
         }
     }
 }
