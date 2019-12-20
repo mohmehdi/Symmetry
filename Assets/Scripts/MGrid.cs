@@ -130,7 +130,6 @@ public class MGrid : MonoBehaviour
         }
     }
 
-    [System.Obsolete]
     private void Draw()                     //instantiateTileprefab to mouse pos
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -142,7 +141,8 @@ public class MGrid : MonoBehaviour
             GameObject go = Instantiate(TilePrefab, SetTilePos(hit.point), Quaternion.identity);
 
             GameObject par=  Instantiate(particles, go.transform.position + new Vector3(0,0,-0.1f), Quaternion.identity);
-            par.GetComponent<ParticleSystem>().startColor = Color;
+            var main = par.GetComponent<ParticleSystem>().main;
+            main.startColor = Color;
             Destroy(par, 0.5f);
 
             go.transform.localScale = cell_Size;

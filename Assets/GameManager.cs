@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameManager : MonoBehaviour
 {
     public static int Level=0;
     public MGrid pattern;
     public MGrid pad;
-
+    private bool flag=false;
     public Slider Score;
-     public  Animator corner1;
-     public  Animator corner2;
+    public Text DrawOrShow;
     public GameObject BTN_Panel;
     public GameObject Level_Select_Panel;
-
+    public Text BestRecord;
+    public Text ThisRecord;
+    private int thisRecord=0;
+    private int[] record;
     public GameObject path;
 
     private GridData data;
-
+    private float percent;
     //ui elements
     private void Awake()
     {
@@ -39,16 +43,12 @@ public class GameManager : MonoBehaviour
         if (flag)
         {
             Invoke("Delay", 0.5f);
-            
-             corner1.SetBool("Small", false);
-             corner2.SetBool("Small", false);
+
         }
         else
         {
             Level_Select_Panel.SetActive(false);
             BTN_Panel.SetActive(true);
-            corner1.SetBool("Small", true);
-            corner2.SetBool("Small", true);
         }
     }
     public void LoadScene(int level)
@@ -72,13 +72,20 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadSceneAsync("DrawSave");
         }
-    } 
+    }
+
+    #region Loading level
     private void LoadLevel()
     {
         if (Level != 0)
         {
             SetData_level(Level);
             LoadPattern();
+        }
+        if (Level <= 5 && Level >= 1)
+        {
+            pad.GetComponent<MGrid>().enabled = false;
+            record = SaveStatus.Load().record;
         }
     }
     private void SetData_level(int l)
@@ -181,25 +188,36 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        levelSpecial();
-    }
-    private void levelSpecial()
-    {
         if (Level != -1)
         {
             pattern.enabled = false;
+            pattern.transform.SetParent(path.transform);
         }
-
     }
-    public void SetPadActive(bool flag )
+    #endregion
+    
+    public void SetPadActive()
     {
+        //Debug.Log(LookCounter);
+       // SaveStatus.Save(record);
+        flag = !flag;
+        if (flag)
+        {
+            DrawOrShow.text = "Look";
+        }
+        else
+        {
+            thisRecord++;
+
+            DrawOrShow.text = "Draw";
+        }
             pad.GetComponent<MGrid>().enabled = flag;
             pattern.gameObject.SetActive(!flag);
     }
     public void Check()
     {
-        AnimatePlane();
-        pad.enabled = false;
+        // pad.enabled = false;
+
         int count = 0;
         for (int i = 0; i < data.size; i++)
         {
@@ -211,14 +229,70 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        float percent = (float) count / (data.size * (data.size*2) ) ;
-        Debug.Log(percent);
-        Score.value = percent;
-        
+        float p = (float) count / (data.size * (data.size*2) ) ;
+        percent = p;
+        if (percent == 1)
+        {
+            if (thisRecord<record[Level])
+            {
+            record[Level] = thisRecord;
+            }
+        }
+        StartCoroutine( scoreBar());
+    }
+    IEnumerator scoreBar()
+    {
+        BestRecord.text =record[Level].ToString();
+        ThisRecord.text = thisRecord.ToString();
+        while (Mathf.Abs( percent - Score.value) >0.01f)
+        {
+            if (percent > Score.value)
+            {
+                Score.value += 0.02f;
+            }
+            else
+            {
+                Score.value -= 0.02f;
+            }
+            yield return null;
+        }
     }
 
-    private void AnimatePlane()
+}
+public static class SaveStatus
+{
+    public static void Save(int[] record)
     {
-       // pad.gameObject.transform.SetParent(path.transform);
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = Application.persistentDataPath + "/PlayerStatus.save";
+
+            FileStream stream = new FileStream(path, FileMode.Create);
+
+
+        PlayerStatus data = new PlayerStatus
+        {
+            record =record
+        };
+        ;
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+    public static PlayerStatus Load()
+    {
+        string path = Application.persistentDataPath + "/PlayerStatus.save";
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+            PlayerStatus data = formatter.Deserialize(stream) as PlayerStatus;
+            stream.Close();
+
+            return data;
+        }
+        else
+        {
+            Debug.LogError("Save not found");
+            return new PlayerStatus {record=new int[5] };
+        }
     }
 }

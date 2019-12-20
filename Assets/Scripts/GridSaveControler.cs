@@ -6,7 +6,7 @@ public static class GridSaveControler
     public static void Save(MGrid grid)
     {
         BinaryFormatter formatter = new BinaryFormatter();
-        string path = Application.persistentDataPath + "/GridData.jpg";
+        string path = Application.persistentDataPath + "/GridData.save";
         FileStream stream = new FileStream(path, FileMode.Create);
 
         GridData data = new GridData
@@ -20,7 +20,7 @@ public static class GridSaveControler
     }
     public static GridData Load()
     {
-        string path = Application.persistentDataPath + "/GridData.jpg";
+        string path = Application.persistentDataPath + "/GridData.save";
         if (File.Exists(path))
         {
             BinaryFormatter formatter = new BinaryFormatter();
