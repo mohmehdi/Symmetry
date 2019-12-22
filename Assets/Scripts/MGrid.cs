@@ -6,6 +6,8 @@ using System.Collections;
 
 public class MGrid : MonoBehaviour
 {
+    public bool Is_pen = true;
+    public Text penorearaser;
     //........Grid Line Properties..........//
     public GameObject LinePrefab;
     [SerializeField]
@@ -36,13 +38,13 @@ public class MGrid : MonoBehaviour
     private void Update()
     {
         SetTileMatColor();
-        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) //if mouse is over ui not gameobject
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() ) //if mouse is over ui not gameobject
             return;
-        if (Input.GetMouseButton(0))
+        if (Is_pen && Input.GetMouseButton(0))
         {
             Draw();
         }
-       else if (Input.GetMouseButton(1))
+       else if (!Is_pen && Input.GetMouseButton(0) )
         {
             Erase();
         }
@@ -107,30 +109,10 @@ public class MGrid : MonoBehaviour
     public void SetTileMatColor()         //set a material to prefab to draw
     {
 
-        if (Mat_ID == 1) 
+        if (Mat_ID<=Mats.Count) 
         {
-       TilePrefab.GetComponent<Renderer>().material = Mats[0] ;
-            Color = Mats[0].color;
-        }
-        else if (Mat_ID == 2)
-        {
-           TilePrefab.GetComponent<Renderer>().material = Mats[1];
-            Color = Mats[1].color;
-        }
-        else if (Mat_ID == 3)
-        {
-           TilePrefab.GetComponent<Renderer>().material = Mats[2];
-            Color = Mats[2].color;
-        }
-        else if (Mat_ID == 4)
-        {
-           TilePrefab.GetComponent<Renderer>().material = Mats[3];
-            Color = Mats[3].color;
-        }
-        else if (Mat_ID == 5)
-        {
-           TilePrefab.GetComponent<Renderer>().material = Mats[4];
-            Color = Mats[4].color;
+       TilePrefab.GetComponent<Renderer>().material = Mats[Mat_ID-1] ;
+            Color = Mats[Mat_ID-1].color;
         }
     }
 
@@ -215,6 +197,11 @@ public class MGrid : MonoBehaviour
                 Destroy(tile.gameObject);
             }
         }
+    }
+    public void PenOrEaraser()
+    {
+        Is_pen = !Is_pen;
+        penorearaser.text = !Is_pen ? "Brush" : "Earaser";
     }
     public void Load()
     {
