@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadSceneAsync("Main");
         }
-        else if (Level >= 1 && Level <= 5)
+        else if (Level >0 || Level ==-2)
         {
             SceneManager.LoadSceneAsync("Levels");
         }
@@ -79,22 +79,20 @@ public class GameManager : MonoBehaviour
   
     private void LoadLevel()
     {
-        if (Level > 0)
+        if (Level != 0 && Level != -1)
         {
-            SetData_level(Level);
+            SetData_level();
             LoadPattern();
-        }
-        if (Level <= 5 && Level >= 1)
-        {
+
             pad.DeleteGrid();
             pad.GenerateGrid(data.size);
             pad.GetComponent<MGrid>().enabled = false;
             record = SaveStatus.Load().record;
         }
     }
-    private void SetData_level(int l)
+    private void SetData_level()
     {
-        if (Level == -1)            //DrawSave scene
+        if (Level == -1)          
         {
             data.size = 5;
             //saved data from levelmake sceane
@@ -106,9 +104,26 @@ public class GameManager : MonoBehaviour
             {0,0,0,0,0,0,0,0,0,0}
             };
         }
-
-            //saved data from levelmake sceane
-       else if (Level==1)
+        else if (Level == -2)
+        {
+            string path = Application.persistentDataPath + "/GridData.save";
+            if (File.Exists(path))
+                data = GridSaveControler.Load();
+            else
+            {
+                data.size = 5;
+                //saved data from levelmake sceane
+                data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+            };
+            }
+        }
+        //saved data from levelmake sceane
+        else if (Level==1)
         {
             data.size = 5;
             data.grid = new int[,] {
@@ -152,24 +167,7 @@ public class GameManager : MonoBehaviour
             {0,0,0,0,0,0,0,0,0,0}
             };
         }
-        else if (Level == 5)
-        {
-            string path = Application.persistentDataPath + "/GridData.save";
-            if (File.Exists(path))
-                data = GridSaveControler.Load();
-            else
-            {
-                data.size = 5;
-                //saved data from levelmake sceane
-                data.grid = new int[,] {
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0}
-            };
-            }
-        }
+        
     }
     private void LoadPattern()
     {
@@ -253,11 +251,12 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator scoreBar()
     {
+       if (Level != -2)
         if (record[Level]!=-1)
         {
-            BestRecord.text =record[Level].ToString();
+                BestRecord.text ="Best :"+ record[Level].ToString();
         }
-        ThisRecord.text = thisRecord.ToString();
+        ThisRecord.text ="Your Score :"+ thisRecord.ToString();
         while (Mathf.Abs( percent - Score.value) >0.01f)
         {
             if (percent > Score.value)

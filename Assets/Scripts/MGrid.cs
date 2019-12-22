@@ -36,6 +36,8 @@ public class MGrid : MonoBehaviour
     private void Update()
     {
         SetTileMatColor();
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) //if mouse is over ui not gameobject
+            return;
         if (Input.GetMouseButton(0))
         {
             Draw();
@@ -77,6 +79,8 @@ public class MGrid : MonoBehaviour
     {
         Size = size;
         Tiles = new int[Size, 2 * Size];
+
+        lineSize = size *10;
 
         cell_Size = new Vector3(transform.localScale.x / Size, transform.localScale.y / (2 * Size),0.01f); 
         int lenght = 2 * Size;
@@ -141,6 +145,7 @@ public class MGrid : MonoBehaviour
             GameObject go = Instantiate(TilePrefab, SetTilePos(hit.point), Quaternion.identity);
 
             GameObject par=  Instantiate(particles, go.transform.position + new Vector3(0,0,-0.1f), Quaternion.identity);
+            par.transform.localScale = par.transform.localScale / (Size/5);
             var main = par.GetComponent<ParticleSystem>().main;
             main.startColor = Color;
             Destroy(par, 0.5f);
@@ -162,6 +167,7 @@ public class MGrid : MonoBehaviour
                     return;
 
                 GameObject par= Instantiate(particles, hit.point, Quaternion.identity);
+                par.transform.localScale = par.transform.localScale / (Size / 5);
                 var main = par.GetComponent<ParticleSystem>().main;
                 main.startColor = hit.transform.gameObject.GetComponent<Renderer>().material.color;
 
