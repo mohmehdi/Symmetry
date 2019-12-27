@@ -6,8 +6,9 @@ using System.Collections;
 
 public class MGrid : MonoBehaviour
 {
-    public bool Is_pen = true;
-    public Text penorearaser;
+    public AudioSource AudioSource;
+    private bool Is_pen = true;
+    private bool touchd = false;
     //........Grid Line Properties..........//
     public GameObject LinePrefab;
     [SerializeField]
@@ -38,17 +39,39 @@ public class MGrid : MonoBehaviour
     private void Update()
     {
         SetTileMatColor();
-        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() ) //if mouse is over ui not gameobject
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() || Input.touchCount>1 ) //if mouse is over ui not gameobject
             return;
-        if (Is_pen && Input.GetMouseButton(0))
+
+
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            touchd = true;
+
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.gameObject.GetHashCode() == this.gameObject.GetHashCode()) //if hit to another object 
+                    Is_pen = true;
+                else if (hit.collider.CompareTag("Tile"))
+                    Is_pen = false;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            touchd = false;
+        }
+
+
+        if (Is_pen && touchd)
         {
             Draw();
         }
-       else if (!Is_pen && Input.GetMouseButton(0) )
+        else if (!Is_pen && touchd )
         {
             Erase();
-        }
-       
+        } 
     }
     public void SaveLevelData_Dev()   //to make levels data : size and tiles matrix >> save as txt to use in gamemanager
     {
@@ -136,6 +159,12 @@ public class MGrid : MonoBehaviour
             go.transform.SetParent(transform);
 
             Tiles[Current.x, Current.y] = Mat_ID;
+
+            System.Random rand = new System.Random();
+
+            AudioSource.pitch = 1;
+            AudioSource.panStereo = 1;
+            AudioSource.Play();
         }
     }
     private void Erase()
@@ -159,6 +188,10 @@ public class MGrid : MonoBehaviour
 
                 Destroy(par, 0.5f);
                 Tiles[Current.x, Current.y] = 0;
+
+                AudioSource.pitch = 1.1f;
+                AudioSource.panStereo = -1;
+                AudioSource.Play();
             }
         }
     }
@@ -198,11 +231,7 @@ public class MGrid : MonoBehaviour
             }
         }
     }
-    public void PenOrEaraser()
-    {
-        Is_pen = !Is_pen;
-        penorearaser.text = !Is_pen ? "Brush" : "Earaser";
-    }
+
     public void Load()
     {
         DeleteGrid();

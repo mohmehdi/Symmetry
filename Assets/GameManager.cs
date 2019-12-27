@@ -8,7 +8,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject pattHider;
+    public Adad adad;
+    public AudioSource CheckSound;
     public static int Level=0;
+    public List<Button> levelBTNs;
+    public GameObject loadSceneBarPanel;
+    public Slider loadsceneBar;
     public MGrid pattern;
     public MGrid pad;
     private bool flag=false;
@@ -25,26 +31,43 @@ public class GameManager : MonoBehaviour
     public Animator camAnim;
     private GridData data;
     private float percent;
+    public GameObject rewardPanel;
+    public Text rewardText;
+    private List<string> rewardMSG;
+    public int seecount = 0;
     //ui elements
     private void Awake()
     {
+       // adad.Initinalize();
         data = new GridData();
+            Input.backButtonLeavesApp = true;
     }
     private void Start()
     {
+        adad.Initinalize();
         LoadLevel();
+        rewardMSG = new List<string> { "Bravo", "Amazing", "Perfect", "Good Job", "Awesome", "Astounding"};
     }
-    private void Delay()
+    private void LockBTNS()
     {
             BTN_Panel.SetActive(false);
+        int L= SaveStatus.Load().level;
+        //Debug.Log(L);
+        for (int i = 0; i < levelBTNs.Count; i++)
+        {
+            if (i+1>L)
+            {
+                levelBTNs[i].interactable=false;
+            }
+        }
             Level_Select_Panel.SetActive(true);
     }
     public void PanelLevel(bool flag)
     {
         if (flag)
         {
-            Invoke("Delay", 0.5f);
-
+            LockBTNS();
+            adad.PrepareRewardVideoAd();
         }
         else
         {
@@ -55,23 +78,30 @@ public class GameManager : MonoBehaviour
     public void LoadScene(int level)
     {
         Level = level;
-
-        Invoke("loadScene",1);
+        loadSceneBarPanel.SetActive(true);
+        StartCoroutine(LoadBar());
     }
-    private void loadScene()
+    private IEnumerator LoadBar()
     {
+        AsyncOperation opp = new AsyncOperation();
         //load level by index
         if (Level == 0)
         {
-            SceneManager.LoadSceneAsync("Main");
+           opp=  SceneManager.LoadSceneAsync("Main");
         }
         else if (Level >0 || Level ==-2)
         {
-            SceneManager.LoadSceneAsync("Levels");
+             opp = SceneManager.LoadSceneAsync("Levels");
         }
         else if (Level == -1)
         {
-            SceneManager.LoadSceneAsync("DrawSave");
+             opp = SceneManager.LoadSceneAsync("DrawSave");
+        }
+        while (!opp.isDone)
+        {
+            float progress = Mathf.Clamp01(opp.progress / 0.9f);
+            loadsceneBar.value = progress;
+            yield return null;
         }
     }
 
@@ -81,6 +111,7 @@ public class GameManager : MonoBehaviour
     {
         if (Level != 0 && Level != -1)
         {
+            adad.PrepareClosableVideoAd();
             SetData_level();
             LoadPattern();
 
@@ -89,11 +120,18 @@ public class GameManager : MonoBehaviour
             pad.GetComponent<MGrid>().enabled = false;
             record = SaveStatus.Load().record;
         }
+        if (Level == 20)
+        {
+            pattHider.SetActive(true);
+        }
     }
     private void SetData_level()
     {
         if (Level == -1)
         {
+            adad.PrepareClosableVideoAd();
+            adad.ShowClosableVideoAd();
+            adad.ShowBannerAd();
             data.size = 5;
             //saved data from levelmake sceane
             data.grid = new int[,] {
@@ -327,7 +365,111 @@ public class GameManager : MonoBehaviour
             {0,0,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,0,3,3,4,3,3,3,3,3,3,0,0,0}
             };
         }
-
+        else if (Level == 16)
+        {
+            data.size = 15;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,1,1,1,5,5,5,5,5,5,5,1,1,1,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,1,1,5,5,5,5,5,5,5,5,5,5,5,5,5,1,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,1,5,5,5,5,5,5,1,1,1,1,5,5,5,5,5,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,1,5,5,5,5,5,5,1,1,1,1,1,1,1,5,5,5,5,1,0,0,0,0,0,0,0},
+            {0,0,0,0,1,5,5,5,5,5,1,1,1,1,1,1,1,1,1,5,5,5,1,0,0,0,0,0,0,0},
+            {0,0,0,1,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,5,5,5,1,0,0,0,0,0,0},
+            {0,0,0,1,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,1,0,0,0,0,0,0},
+            {0,0,1,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,1,0,0,0,0,0},
+            {0,1,1,5,5,5,5,1,1,1,5,1,1,1,1,5,5,1,1,1,1,1,5,5,1,0,0,0,0,0},
+            {0,1,5,5,5,5,1,1,1,5,5,1,1,1,1,5,5,5,5,1,1,1,1,5,5,1,0,0,0,0},
+            {0,1,5,5,5,5,1,5,5,5,5,1,1,1,1,1,5,5,5,5,5,1,1,5,5,1,0,0,0,0},
+            {0,1,5,5,5,5,5,5,5,5,5,1,1,1,1,1,1,5,5,5,5,5,5,5,5,1,0,0,0,0},
+            {0,1,5,5,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,5,1,0,0,0,0},
+            {0,1,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,5,5,5,1,0,0,0,0}
+            };
+        }
+        else if (Level == 17)
+        {
+            data.size = 15;
+            data.grid = new int[,] {
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,1,7,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,2,2,1,7,7,7,7,7,7,7},
+            {7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,1,7,7,1,2,2,2,1,7,7,7,7,7,7},
+            {7,7,7,1,1,1,1,1,1,1,7,7,7,7,1,4,4,1,1,1,2,2,2,2,1,7,7,7,7,7},
+            {7,7,1,4,4,4,4,4,4,4,1,7,7,1,4,4,4,4,4,4,1,2,2,4,1,7,7,7,7,7},
+            {7,1,4,4,4,1,1,1,1,4,4,1,7,1,4,4,1,2,4,4,4,1,4,4,4,1,7,7,7,7},
+            {7,1,4,4,4,4,1,0,0,1,4,4,1,4,4,4,2,1,2,4,4,1,1,4,4,4,1,7,7,7},
+            {1,4,4,4,4,4,4,1,0,1,4,4,1,4,4,4,4,4,1,4,4,1,2,1,4,4,4,1,7,7},
+            {1,4,4,4,4,4,4,4,1,4,4,4,4,1,4,4,4,4,4,1,1,0,0,1,4,4,4,4,1,7},
+            {1,4,4,4,4,4,4,4,4,4,4,4,4,1,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0}
+            };
+        }
+        else if (Level == 18)
+        {
+            data.size = 15;
+            data.grid = new int[,] {
+           {5,5,5,7,7,5,5,5,7,7,7,7,5,5,5,5,7,7,1,4,4,4,4,4,4,4,7,4,4,4},
+            {7,7,5,7,7,5,7,5,7,7,7,7,5,7,7,5,7,7,1,7,7,7,7,7,7,4,7,4,7,4},
+            {7,7,5,7,7,5,7,5,7,5,5,5,5,7,7,5,7,7,1,4,4,4,4,4,4,4,7,4,7,4},
+            {7,7,5,5,5,5,7,5,5,5,7,7,7,7,7,5,5,5,1,4,7,7,7,7,7,7,7,4,7,4},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,1,4,4,4,4,4,4,4,7,4,7,4},
+            {7,7,7,7,7,7,7,7,7,2,2,2,2,2,2,2,1,5,1,7,7,7,7,7,7,4,7,4,7,4},
+            {7,7,7,7,7,7,7,7,7,2,1,3,1,1,1,2,1,5,1,4,4,4,4,4,4,4,7,4,7,4},
+            {7,2,2,2,2,2,2,2,7,2,1,3,1,2,1,2,1,5,1,4,7,7,7,7,7,7,7,4,7,4},
+            {7,2,7,7,7,7,7,2,7,2,1,3,1,2,2,2,1,5,1,4,4,4,4,4,4,4,4,4,7,4},
+            {7,2,7,2,2,2,7,2,7,2,1,3,1,1,1,1,1,5,1,7,7,7,7,7,7,7,7,7,7,4},
+            {7,2,7,2,7,2,7,2,7,2,1,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4},
+            {7,2,7,2,7,7,7,2,7,2,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {7,2,7,2,2,2,2,2,7,2,1,3,3,7,3,3,3,3,3,7,3,3,3,7,3,3,7,3,7,3},
+            {7,2,7,7,7,7,7,7,7,2,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+            {7,2,2,2,2,2,2,2,2,2,1,3,3,7,3,3,3,3,3,7,3,3,3,7,3,3,7,3,7,3}
+            };
+        }
+        else if (Level == 19)
+        {
+            data.size = 15;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,1,5,5,5,5,5,1,1,5,5,5,5,5,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,1,1,1,1,1,5,1,1,1,1,1,1,1,1,1,1,5,1,1,1,1,1,0,0,0,0},
+            {0,0,0,0,1,2,2,2,1,5,1,2,2,2,2,2,2,2,2,1,5,1,2,2,2,1,0,0,0,0},
+            {0,0,0,0,1,2,1,1,1,5,1,1,1,1,1,1,1,1,1,1,5,1,1,1,2,1,0,0,0,0},
+            {0,0,0,0,1,2,1,0,1,5,1,0,1,5,1,1,5,1,0,1,5,1,0,1,2,1,0,0,0,0},
+            {0,0,0,0,1,2,1,0,1,5,1,0,1,5,1,1,5,1,0,1,5,1,0,1,2,1,0,0,0,0},
+            {0,0,0,0,1,2,1,0,1,5,1,0,1,5,1,1,5,1,0,1,5,1,0,1,2,1,0,0,0,0},
+            {1,1,1,1,1,2,1,1,1,1,1,1,1,5,1,1,5,1,1,1,1,1,1,1,2,1,1,1,1,1},
+            {1,4,4,4,1,2,1,4,4,4,4,4,1,5,1,1,5,1,4,4,4,4,4,1,2,1,4,4,4,1},
+            {1,4,1,1,1,2,1,1,1,1,1,4,1,5,1,1,5,1,4,1,1,1,1,1,2,1,1,1,4,1},
+            {1,4,1,0,1,2,1,0,1,1,1,1,1,5,1,1,5,1,4,1,5,1,0,1,2,1,0,1,4,1},
+            {1,4,1,0,1,2,1,0,1,5,5,5,5,5,1,1,5,5,5,5,5,1,0,1,2,1,0,1,4,1},
+            {1,4,1,0,1,2,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,2,1,0,1,4,1},
+            {1,4,1,0,1,2,1,0,0,0,1,4,1,0,0,0,0,1,4,1,0,0,0,1,2,1,0,1,4,1}
+            };
+        }
+        else if (Level == 20)
+        {
+            data.size = 15;
+            data.grid = new int[,] {
+           {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
+            {1,0,0,2,0,0,4,0,0,1,0,4,0,4,4,4,0,1,0,0,5,0,0,1,0,0,4,4,0,1},
+            {1,0,0,0,1,5,5,0,0,1,0,4,0,1,0,4,0,1,0,0,1,5,0,1,0,0,1,4,0,1},
+            {1,0,0,0,2,0,3,0,0,1,0,4,4,4,0,4,0,1,0,0,3,0,0,1,0,0,4,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
+            {1,0,0,4,5,3,0,0,0,1,0,0,4,4,4,0,0,1,0,0,5,0,0,1,0,0,4,0,0,1},
+            {1,0,0,0,5,0,0,0,0,1,0,0,4,0,0,0,0,1,0,5,1,3,0,1,0,4,1,4,0,1},
+            {1,0,0,0,1,2,0,0,0,1,0,0,4,1,4,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
+            {1,0,0,2,0,0,0,0,0,1,0,0,0,0,4,0,0,1,0,5,3,0,0,1,0,0,4,0,0,1},
+            {1,0,0,0,0,0,0,0,0,1,0,0,4,4,4,0,0,1,0,5,1,0,0,1,0,4,1,0,0,1},
+            {1,0,3,0,2,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,5,0,0,1,0,0,4,0,0,1},
+            {1,0,5,5,1,0,0,0,0,1,0,4,0,4,4,4,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
+            {1,0,4,0,0,2,0,0,0,1,0,4,0,1,0,4,0,1,0,3,1,5,0,1,0,4,1,4,0,1},
+            {1,0,0,0,0,0,0,0,0,1,0,4,4,4,0,4,0,1,0,0,5,0,0,1,0,0,4,0,0,1}
+            };
+        }
     }
     private void LoadPattern()
     {
@@ -384,6 +526,10 @@ public class GameManager : MonoBehaviour
             DrawOrShow.text = "Draw";
         }
             pad.GetComponent<MGrid>().enabled = flag;
+        if (!adad.IsClosableVideoAdReady())
+        {
+            adad.PrepareClosableVideoAd();
+        }
     }
     public void Check()
     {
@@ -402,11 +548,29 @@ public class GameManager : MonoBehaviour
         percent = p;
         if (percent == 1)
         {
+           
+
+            System.Random rand = new System.Random();
+            rewardPanel.SetActive(true);
+            rewardText.text = rewardMSG[rand.Next(rewardMSG.Count)];
             if (thisRecord<record[Level] || record[Level]==-1)
             {
                 record[Level] = thisRecord;
-                SaveStatus.Save(record);
+                int temp = SaveStatus.Load().level;
+                if (temp<=Level)
+                {
+                    SaveStatus.Save(record,Level+1);
+                }
+                else
+                {
+                    SaveStatus.Save(record, temp);
+                }
             }
+            CheckSound.Play();
+        }
+        else
+        {
+            adad.ShowClosableVideoAd();
         }
         StartCoroutine( scoreBar());
     }
@@ -431,11 +595,39 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
     }
+    
+    public void videoLevelUnlocker()
+    {
+        if (seecount ==5)
+        {
+            int t =SaveStatus.Load().level + 1;
+            SaveStatus.Save(SaveStatus.Load().record,t);
+            if (t-1<=19)
+            {
+                levelBTNs[t-1].interactable = true;
+            }
+        }
+        seecount++;
+        if (adad.IsRewardVideoAdReady())
+        {
+            adad.ShowRewardVideoAd();
+        }
+        else
+        {
+            adad.PrepareRewardVideoAd();
+        }
+    }
+     public  void Quit()
+    {
+        //UnityEditor.EditorApplication.isPlaying = false;
 
+         Application.Quit();
+
+    }
 }
 public static class SaveStatus
 {
-    public static void Save(int[] record)
+    public static void Save(int[] record,int level)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/PlayerStatus.save";
@@ -445,7 +637,8 @@ public static class SaveStatus
 
         PlayerStatus data = new PlayerStatus
         {
-            record =record
+            record = record,
+            level = level
         };
         ;
         formatter.Serialize(stream, data);
@@ -465,13 +658,13 @@ public static class SaveStatus
         }
         else
         {
-            Debug.LogError("Save not found");
+           // Debug.LogError("Save not found");
             int[] tmp = new int[50];
             for (int i = 0; i < 10; i++)
             {
                 tmp[i] = -1;
             }
-            Save(tmp);
+            Save(tmp,1);
             return new PlayerStatus {record=tmp};
         }
     }
