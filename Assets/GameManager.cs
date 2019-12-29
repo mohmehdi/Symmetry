@@ -8,66 +8,75 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject pattHider;
-    public Adad adad;
-    public AudioSource CheckSound;
-    public static int Level=0;
-    public List<Button> levelBTNs;
-    public GameObject loadSceneBarPanel;
-    public Slider loadsceneBar;
-    public MGrid pattern;
-    public MGrid pad;
-    private bool flag=false;
-    public Slider Score;
-    public Text DrawOrShow;
-    public GameObject BTN_Panel;
-    public GameObject Level_Select_Panel;
-    public Text BestRecord;
+    public static int Level=0;                  //to fill pattern with its data >> and its static for refrence between Scenes
+    #region UI controler
+    public List<Button> levelBTNs;              //list of level buttons and each one set the (static Level)
+
+    public GameObject loadSceneBarPanel;        //the loading bar gameobject >> enable it before loading scene
+    public Slider loadsceneBar;                 //Loading bar
+
+    private bool flag=false;                    //to decide Hide main or level_select >> change when (level select button) and (back to main button)
+    public GameObject BTN_Panel;                //enable when flag = flase 
+    public GameObject Level_Select_Panel;       //enable when flag = true 
+
+    public Slider Score;                        //Score Bar
+    private float percent;                      //filles Score Bar
+
+    public Sprite[] DrawOrShow = new Sprite[2];//change LookDrawBTN_Image button image to draw or look
+    public Image LookDrawBTN_Image;            
+
+    public Text BestRecord;                     
     public Text ThisRecord;
     private int thisRecord=0;
     private int[] record;
-    public Animator pathAnim;
+
+    public GameObject rewardPanel;              //enable this panel after level finished
+    private List<string> rewardMSG;             
+    public Text rewardText;                     //show message from rewardMSG randomly
+    #endregion 
+    #region Audio                   
+    public AudioSource CheckSound;              //this will be played after you finished level
+
+    #endregion
+    #region Gameobject controls
+    public GameObject pattHider;                //a plane in level 20 that covers pattern   
+    public MGrid pattern;                       //refrence to pattern
+    public MGrid pad;                           //refrence to pad
+    private GridData data;                      //data loads by SetDatalevel or by save file >> a size and Matrix 
+
+    public Animator pathAnim;                   //anamator of cylender called path that is patterns parent  so pattern rotates when path rotate
     public GameObject path;
-    public Animator camAnim;
-    private GridData data;
-    private float percent;
-    public GameObject rewardPanel;
-    public Text rewardText;
-    private List<string> rewardMSG;
-    public int seecount = 0;
-    //ui elements
+    public Animator camAnim;                    //to centerize camera when pattern rotates behind pad
+    #endregion
     private void Awake()
     {
-       // adad.Initinalize();
-        data = new GridData();
-            Input.backButtonLeavesApp = true;
+        data = new GridData();                  //make new data
+        Input.backButtonLeavesApp = true;       //so back in android works
     }
     private void Start()
     {
-        adad.Initinalize();
-        LoadLevel();
-        rewardMSG = new List<string> { "Bravo", "Amazing", "Perfect", "Good Job", "Awesome", "Astounding"};
+        LoadLevel();                     //load pattern data and generate new grid 
+        rewardMSG = new List<string> { "Bravo", "Amazing", "Perfect", "Good Job", "Awesome", "Astounding","Good job","Exelent"};
     }
-    private void LockBTNS()
+    private void LockBTNS()             //active or deactive level selection buttons
     {
-            BTN_Panel.SetActive(false);
-        int L= SaveStatus.Load().level;
-        //Debug.Log(L);
-        for (int i = 0; i < levelBTNs.Count; i++)
-        {
-            if (i+1>L)
-            {
-                levelBTNs[i].interactable=false;
-            }
-        }
-            Level_Select_Panel.SetActive(true);
+        BTN_Panel.SetActive(false);
+        int L= SaveStatus.Load().level;   //get level and deactive all buttons grather than it             
+        //Debug.Log(L);                                
+        for (int i = 0; i < levelBTNs.Count; i++)      
+        {                                              
+            if (i+1>L)                                 
+            {                                          
+                levelBTNs[i].interactable=false;       
+            }                                          
+        }                                              
+            Level_Select_Panel.SetActive(true);        
     }
-    public void PanelLevel(bool flag)
+    public void PanelLevel(bool flag)   //switch between main panel and level select panel
     {
         if (flag)
         {
             LockBTNS();
-            adad.PrepareRewardVideoAd();
         }
         else
         {
@@ -75,13 +84,13 @@ public class GameManager : MonoBehaviour
             BTN_Panel.SetActive(true);
         }
     }
-    public void LoadScene(int level)
+    public void LoadScene(int level)    //level_select_buttons set the value and it will start loading bar
     {
         Level = level;
         loadSceneBarPanel.SetActive(true);
         StartCoroutine(LoadBar());
     }
-    private IEnumerator LoadBar()
+    private IEnumerator LoadBar()       //do loading opperation and set Slider value
     {
         AsyncOperation opp = new AsyncOperation();
         //load level by index
@@ -106,32 +115,27 @@ public class GameManager : MonoBehaviour
     }
 
     #region Loading level
-  
     private void LoadLevel()
     {
         if (Level != 0 && Level != -1)
         {
-            adad.PrepareClosableVideoAd();
-            SetData_level();
-            LoadPattern();
+            SetData_level();                    //first set the data
+            LoadPattern();                      //load pattern by data we just have now
 
-            pad.DeleteGrid();
-            pad.GenerateGrid(data.size);
-            pad.GetComponent<MGrid>().enabled = false;
-            record = SaveStatus.Load().record;
+            pad.DeleteGrid();                 
+            pad.GenerateGrid(data.size);         
+            pad.GetComponent<MGrid>().enabled = false; //pad is not intractable first
+            record = SaveStatus.Load().record;         //set record from save for best Score value
         }
         if (Level == 20)
         {
-            pattHider.SetActive(true);
+            pattHider.SetActive(true);                  //panel that should hide pattern
         }
-    }
+    }           
     private void SetData_level()
     {
         if (Level == -1)
         {
-            adad.PrepareClosableVideoAd();
-            adad.ShowClosableVideoAd();
-            adad.ShowBannerAd();
             data.size = 5;
             //saved data from levelmake sceane
             data.grid = new int[,] {
@@ -505,9 +509,6 @@ public class GameManager : MonoBehaviour
             pattern.transform.SetParent(path.transform);
         }
     }
-
-    
-
     #endregion
     
     public void SetPadActive()
@@ -517,19 +518,17 @@ public class GameManager : MonoBehaviour
         camAnim.SetBool("Look", flag);
         if (flag)
         {
-            DrawOrShow.text = "Look";
+            LookDrawBTN_Image.sprite = DrawOrShow[0];
         }
         else
         {
             thisRecord++;
 
-            DrawOrShow.text = "Draw";
+            LookDrawBTN_Image.sprite = DrawOrShow[1];
+
         }
-            pad.GetComponent<MGrid>().enabled = flag;
-        if (!adad.IsClosableVideoAdReady())
-        {
-            adad.PrepareClosableVideoAd();
-        }
+        pad.GetComponent<MGrid>().enabled = flag;
+
     }
     public void Check()
     {
@@ -570,7 +569,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            adad.ShowClosableVideoAd();
+            //adad.ShowClosableVideoAd();
         }
         StartCoroutine( scoreBar());
     }
@@ -596,33 +595,9 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void videoLevelUnlocker()
-    {
-        if (seecount ==5)
-        {
-            int t =SaveStatus.Load().level + 1;
-            SaveStatus.Save(SaveStatus.Load().record,t);
-            if (t-1<=19)
-            {
-                levelBTNs[t-1].interactable = true;
-            }
-        }
-        seecount++;
-        if (adad.IsRewardVideoAdReady())
-        {
-            adad.ShowRewardVideoAd();
-        }
-        else
-        {
-            adad.PrepareRewardVideoAd();
-        }
-    }
      public  void Quit()
     {
-        //UnityEditor.EditorApplication.isPlaying = false;
-
          Application.Quit();
-
     }
 }
 public static class SaveStatus
