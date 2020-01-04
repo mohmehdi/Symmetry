@@ -6,14 +6,14 @@ using System.Collections;
 
 public class MGrid : MonoBehaviour
 {
-    public AudioSource AudioSource;
+    public AudioSource draw_erase_voice;
     private bool Is_pen = true;
     private bool touchd = false;
     //........Grid Line Properties..........//
     public GameObject LinePrefab;
     [SerializeField]
     [Range(10,1500)]
-    private float lineSize=100;
+    private float lineSize=100;//less values means thicker lines 
     //.....................................//
     public InputField textInput;
     public int Size { get; set; }   //(Size by 2*Size)  grid
@@ -162,14 +162,14 @@ public class MGrid : MonoBehaviour
 
             System.Random rand = new System.Random();
 
-            AudioSource.pitch = 1;
-            AudioSource.panStereo = 1;
-            AudioSource.Play();
+            draw_erase_voice.pitch = 1;
+            draw_erase_voice.panStereo = 1;
+            draw_erase_voice.Play();
         }
     }
     private void Erase()
     {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);            //transform mouse position to worlds ray
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.CompareTag("Tile"))
@@ -189,9 +189,9 @@ public class MGrid : MonoBehaviour
                 Destroy(par, 0.5f);
                 Tiles[Current.x, Current.y] = 0;
 
-                AudioSource.pitch = 1.1f;
-                AudioSource.panStereo = -1;
-                AudioSource.Play();
+                draw_erase_voice.pitch = 1.1f;
+                draw_erase_voice.panStereo = -1;
+                draw_erase_voice.Play();
             }
         }
     }
@@ -201,9 +201,11 @@ public class MGrid : MonoBehaviour
 
         position -= transform.position;             //if this plane is not in 0,0,0
         position = new Vector3(position.x + transform.localScale.x / 2, position.y + transform.localScale.y / 2) ;
-        int x = (int)(position.x / cell_Size.x);
-        int y = (int)(position.y / cell_Size.y);
-        //Debug.Log(x.ToString() + "  " + y.ToString());
+        int x = (int)(position.x / cell_Size.x);        //mouse position is on which cell in x axis
+        int y = (int)(position.y / cell_Size.y);        //mouse position is on which cell in y axis
+
+        //uncomment if u wanna test
+        //Debug.Log(x.ToString() + "  " + y.ToString());    
 
         result = new Vector3(x * cell_Size.x + cell_Size.x / 2, y * cell_Size.y + cell_Size.y / 2, position.z) ;
         result = new Vector3(result.x - transform.localScale.x / 2, result.y - transform.localScale.y / 2);
@@ -232,7 +234,7 @@ public class MGrid : MonoBehaviour
         }
     }
 
-    public void Load()
+    public void Load()                      //same as LoadPettern in GameManager script
     {
         DeleteGrid();
 

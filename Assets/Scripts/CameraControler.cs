@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class CameraControler : MonoBehaviour
 {
-    //  public float speed;
-    //  Vector3 Center;
-    //  Camera cam;
-    // private float smooth =0.2f;
     public float smooth;
     public float offcet1;
     public float offcet2;
@@ -22,11 +18,14 @@ public class CameraControler : MonoBehaviour
 
 
  
- void    Update()
+ void Update()
     {
+        //android zoom
             transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, zoom.value * offcet1-1),smooth*Time.deltaTime);
             transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, pan.value * offcet2,transform.position.z), smooth*Time.deltaTime);
 
+
+        //mouseScroll zoom
 
         //float ScrollWheelChange = Input.GetAxis("Mouse ScrollWheel");           //This little peece of code is written by JelleWho https://github.com/jellewie
         //if (ScrollWheelChange != 0)

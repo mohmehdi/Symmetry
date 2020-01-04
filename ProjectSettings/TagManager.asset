@@ -16,7 +16,7 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
+  - new
   - 
   - 
   - 
@@ -40,6 +40,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: new
+    uniqueID: 2655307407
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

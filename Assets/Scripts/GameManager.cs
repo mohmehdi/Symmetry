@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #region Loading level
+    #region Loading level and data
     private void LoadLevel()
     {
         if (Level != 0 && Level != -1)
@@ -130,14 +130,15 @@ public class GameManager : MonoBehaviour
         if (Level == 20)
         {
             pattHider.SetActive(true);                  //panel that should hide pattern
+            pattHider.gameObject.GetComponentInChildren<MeshRenderer>().sortingLayerName = "Foreground";
         }
     }           
     private void SetData_level()
     {
+                                      //saved data from levelmake sceane
         if (Level == -1)
         {
             data.size = 5;
-            //saved data from levelmake sceane
             data.grid = new int[,] {
             {0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0},
@@ -146,7 +147,7 @@ public class GameManager : MonoBehaviour
             {0,0,0,0,0,0,0,0,0,0}
             };
         }
-        else if (Level == -2)
+        else if (Level == -2)                           //this is generated level in creative mod 
         {
             string path = Application.persistentDataPath + "/GridData.save";
             if (File.Exists(path))
@@ -436,7 +437,7 @@ public class GameManager : MonoBehaviour
         {
             data.size = 15;
             data.grid = new int[,] {
-            {0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,1,5,5,5,5,5,1,1,5,5,5,5,5,1,0,0,0,0,0,0,0,0},
             {0,0,0,0,1,1,1,1,1,5,1,1,1,1,1,1,1,1,1,1,5,1,1,1,1,1,0,0,0,0},
             {0,0,0,0,1,2,2,2,1,5,1,2,2,2,2,2,2,2,2,1,5,1,2,2,2,1,0,0,0,0},
@@ -459,14 +460,14 @@ public class GameManager : MonoBehaviour
             data.grid = new int[,] {
            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
-            {1,0,0,2,0,0,4,0,0,1,0,4,0,4,4,4,0,1,0,0,5,0,0,1,0,0,4,4,0,1},
+            {1,0,0,2,0,0,4,0,0,1,0,4,0,4,4,4,0,1,0,0,5,0,0,1,0,0,4,0,0,1},
             {1,0,0,0,1,5,5,0,0,1,0,4,0,1,0,4,0,1,0,0,1,5,0,1,0,0,1,4,0,1},
             {1,0,0,0,2,0,3,0,0,1,0,4,4,4,0,4,0,1,0,0,3,0,0,1,0,0,4,0,0,1},
             {1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
             {1,0,0,4,5,3,0,0,0,1,0,0,4,4,4,0,0,1,0,0,5,0,0,1,0,0,4,0,0,1},
             {1,0,0,0,5,0,0,0,0,1,0,0,4,0,0,0,0,1,0,5,1,3,0,1,0,4,1,4,0,1},
             {1,0,0,0,1,2,0,0,0,1,0,0,4,1,4,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
-            {1,0,0,2,0,0,0,0,0,1,0,0,0,0,4,0,0,1,0,5,3,0,0,1,0,0,4,0,0,1},
+            {1,0,0,2,0,0,0,0,0,1,0,0,0,0,4,0,0,1,0,0,3,0,0,1,0,0,4,0,0,1},
             {1,0,0,0,0,0,0,0,0,1,0,0,4,4,4,0,0,1,0,5,1,0,0,1,0,4,1,0,0,1},
             {1,0,3,0,2,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,5,0,0,1,0,0,4,0,0,1},
             {1,0,5,5,1,0,0,0,0,1,0,4,0,4,4,4,0,1,0,0,0,0,0,1,0,0,0,0,0,1},
@@ -477,22 +478,35 @@ public class GameManager : MonoBehaviour
     }
     private void LoadPattern()
     {
-        pattern.DeleteGrid();
+        pattern.DeleteGrid();               //this is obvious
         pattern.GenerateGrid(data.size);
 
+
+        //..................set Tiles as data 's grid.......................//
         for (int i = 0; i < data.size; i++)
         {
             for (int j = 0; j < data.size* 2; j++)
             {
-                if (data.grid[i, j] == 0)
+                if (data.grid[i, j] == 0)             
                 {
-                    data.grid[i, j] = 0;
+                    data.grid[i, j] = 0;            //LOL ^-^
                 }
                 else
                 {
+                    //this part is similar to Draw method in MGrid script >>((set material from data and instantiate one where i,j))
+
                     pattern.Set_Mat_ID(data.grid[i, j]);
                     pattern.SetTileMatColor();
                     Vector3 temp;
+                    //// what i did here
+                    /// for example i,j = 0 means left corner of plane
+                    /// i,j * cell size means we are in first left corner cell 
+                    /// + cell size /2 means center of cell so in a 2X1 plane vector is equal(0.5 , 0.5)
+                    /// now if main plane's center is in world's center we need to substract the vector with planes size / 2 
+                    /// if plane size is 1X2 cellsize will be 1X1 (look at MGrid Line 110)
+                    /// vector temp now >> ( 0.5 - 1/2 , 0.5 - 2/2 ) --> ( 0 , -0.5 ) ......>>>> so for secont tile temp will be ( 1, -0.5 )
+                    /// now imagine main plane is NOT at center so we move all tiles x,y,z to where it is (pattern.transform.position is its center)
+                    /// and set tiles Size to cell size and make them children of the plane we are instantiating on
                     temp = new Vector3(i * pattern.cell_Size.x + pattern.cell_Size.x / 2, j * pattern.cell_Size.y + pattern.cell_Size.y / 2, pattern.transform.position.z);
                     temp = new Vector3(temp.x - pattern.transform.localScale.x / 2, temp.y - pattern.transform.localScale.y / 2);
                     temp += pattern.transform.position;
@@ -503,7 +517,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (Level != -1)
+        if (Level != -1)    //if this is a level 1_20 need to disable pattern Not alowed t odraw on it and make it chid of path cylander for animating
         {
             pattern.enabled = false;
             pattern.transform.SetParent(path.transform);
@@ -511,11 +525,13 @@ public class GameManager : MonoBehaviour
     }
     #endregion
     
-    public void SetPadActive()
+    public void SetPadActive()      
     {
         flag = !flag;
-        pathAnim.SetBool("Look", flag);
-        camAnim.SetBool("Look", flag);
+        pathAnim.SetBool("Look", flag);     //play rotating animation for path ( that cylander )
+        camAnim.SetBool("Look", flag);      //play camera's animation
+
+        //change UI image
         if (flag)
         {
             LookDrawBTN_Image.sprite = DrawOrShow[0];
@@ -527,23 +543,23 @@ public class GameManager : MonoBehaviour
             LookDrawBTN_Image.sprite = DrawOrShow[1];
 
         }
-        pad.GetComponent<MGrid>().enabled = flag;
+        pad.GetComponent<MGrid>().enabled = flag; //drawing is not alowed when we are looking at pattern otherwize is
 
     }
     public void Check()
     {
-        int count = 0;
+        int count = 0;                      //how many tiles are correct
         for (int i = 0; i < data.size; i++)
         {
             for (int j = 0; j < data.size*2; j++)
             {
-                if (data.grid[i,j] == pad.Tiles[data.size -i -1,j])
+                if (data.grid[i,j] == pad.Tiles[data.size -i -1,j])     //data.size - i ---> for mirroring index in a 5X10 index (0,0) >> (4,0)
                 {
                     count++;
                 }
             }
         }
-        float p = (float) count / (data.size * (data.size*2) ) ;
+        float p = (float) count / (data.size * (data.size*2) );        //obvious
         percent = p;
         if (percent == 1)
         {
@@ -551,29 +567,26 @@ public class GameManager : MonoBehaviour
 
             System.Random rand = new System.Random();
             rewardPanel.SetActive(true);
-            rewardText.text = rewardMSG[rand.Next(rewardMSG.Count)];
-            if (thisRecord<record[Level] || record[Level]==-1)
+            rewardText.text = rewardMSG[rand.Next(rewardMSG.Count)];    //random reward text
+            if (thisRecord<record[Level] || record[Level]==-1)          //check for best record >> its -1 if there is first time playing level
             {
-                record[Level] = thisRecord;
+                record[Level] = thisRecord;                             //change level's record to what it is now
                 int temp = SaveStatus.Load().level;
-                if (temp<=Level)
+                if (temp<=Level)                                        //if we didnt play this level before so unlock next level
                 {
-                    SaveStatus.Save(record,Level+1);
+                    SaveStatus.Save(record,Level+1);                    
                 }
-                else
+                else                                                    //if we played this level before dont lock next levels
                 {
-                    SaveStatus.Save(record, temp);
+                    SaveStatus.Save(record, temp);                      
                 }
             }
             CheckSound.Play();
         }
-        else
-        {
-            //adad.ShowClosableVideoAd();
-        }
-        StartCoroutine( scoreBar());
+        
+        StartCoroutine( scoreBar());                            //show score in score bar
     }
-    IEnumerator scoreBar()
+    IEnumerator scoreBar()                          //Coroutines
     {
        if (Level != -2)
         if (record[Level]!=-1)
@@ -581,7 +594,8 @@ public class GameManager : MonoBehaviour
                 BestRecord.text ="Best :"+ record[Level].ToString();
         }
         ThisRecord.text ="Your Score :"+ thisRecord.ToString();
-        while (Mathf.Abs( percent - Score.value) >0.01f)
+
+        while (Mathf.Abs( percent - Score.value) >0.01f)                //while distance betwean Scorebar and this percent value is more than 0.01
         {
             if (percent > Score.value)
             {
@@ -591,7 +605,7 @@ public class GameManager : MonoBehaviour
             {
                 Score.value -= 0.02f;
             }
-            yield return null;
+            yield return null;                                          //this line break while loop and do next loop in next frame (-_-)  
         }
     }
     
@@ -600,7 +614,7 @@ public class GameManager : MonoBehaviour
          Application.Quit();
     }
 }
-public static class SaveStatus
+public static class SaveStatus                  //for save load purpose >> save recors and level's unlocked
 {
     public static void Save(int[] record,int level)
     {

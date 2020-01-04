@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4488048, g: 0.4988643, b: 0.57569253, a: 1}
+  m_IndirectSpecularColor: {r: 0.1819625, g: 0.22764963, b: 0.30741015, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec445e065cbd49648ae6496bea96d909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AudioSource: {fileID: 569357923}
+  draw_erase_voice: {fileID: 569357923}
   LinePrefab: {fileID: 6465472825311178970, guid: a1978a795c9a0224087619e6ebd96dd2,
     type: 3}
   lineSize: 50
@@ -2415,8 +2415,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 1, g: 0.8266222, b: 0.3537736, a: 1}
-  m_Intensity: 0.9
+  m_Color: {r: 1, g: 0.90817606, b: 0.6556604, a: 1}
+  m_Intensity: 1.5
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -3712,24 +3712,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6620c179702f9438cd1f45e7a532e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pattHider: {fileID: 0}
-  CheckSound: {fileID: 0}
   levelBTNs: []
   loadSceneBarPanel: {fileID: 1149038124}
   loadsceneBar: {fileID: 1135261090}
-  pattern: {fileID: 0}
-  pad: {fileID: 34168946}
-  Score: {fileID: 0}
-  DrawOrShow: {fileID: 0}
   BTN_Panel: {fileID: 0}
   Level_Select_Panel: {fileID: 0}
+  Score: {fileID: 0}
+  DrawOrShow:
+  - {fileID: 0}
+  LookDrawBTN_Image: {fileID: 0}
   BestRecord: {fileID: 0}
   ThisRecord: {fileID: 0}
+  rewardPanel: {fileID: 0}
+  rewardText: {fileID: 0}
+  CheckSound: {fileID: 0}
+  pattHider: {fileID: 0}
+  pattern: {fileID: 0}
+  pad: {fileID: 34168946}
   pathAnim: {fileID: 0}
   path: {fileID: 0}
   camAnim: {fileID: 0}
-  rewardPanel: {fileID: 0}
-  rewardText: {fileID: 0}
 --- !u!4 &1932609459
 Transform:
   m_ObjectHideFlags: 0
