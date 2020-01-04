@@ -130,7 +130,6 @@ public class GameManager : MonoBehaviour
         if (Level == 20)
         {
             pattHider.SetActive(true);                  //panel that should hide pattern
-            pattHider.gameObject.GetComponentInChildren<MeshRenderer>().sortingLayerName = "Foreground";
         }
     }           
     private void SetData_level()
@@ -475,6 +474,9 @@ public class GameManager : MonoBehaviour
             {1,0,0,0,0,0,0,0,0,1,0,4,4,4,0,4,0,1,0,0,5,0,0,1,0,0,4,0,0,1}
             };
         }
+
+        //add your data here
+
     }
     private void LoadPattern()
     {

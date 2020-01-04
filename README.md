@@ -1,37 +1,44 @@
-## Welcome to GitHub Pages
+# Symmetry
+ 
+Game is available on : [itch io](https://mohmehdi.itch.io/symmetry)        
+for   
+*Linux   
+*Windows   
+*Android   
+*Web   
 
-You can use the [editor on GitHub](https://github.com/mohmehdi/Symmetry/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+### Prerequisites
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Unity3D
 
-### Markdown
+## How to Make New Levels
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+there are 4 scenes
+* Main *
+* Levels *
+* DrawSave *
+* MakeLevel_Dev *    
+    
+use MakeLevel_Dev to make new levels   
+after you finished drawing click save button (load it to make sure)     
+this will create a text file include data you need   
+just rememmber size of the grid you want to save
+add an if statment at SetData_level() method in GameManager script or replace with one of levels 
+for example for change level 2 data you can change size and grid with new values   
 ```
+        else if (Level == 2)  
+        {
+            data.size = 5;
+            data.grid = new int[,] {
+            {0,0,0,0,0,0,0,0,0,0},     	//
+            {0,0,3,0,0,0,0,5,0,0},   	//
+            {3,3,3,3,3,3,5,4,5,0},		//   new data will paste here
+            {0,0,3,0,0,0,0,5,0,0},		//
+            {0,0,0,0,0,0,0,0,0,0}		//
+            };
+        }
+```
+** if you want something special for a level like i did in level 20 do it on LoadLevel() method in GameManager script 	:slightly_smiling_fac **
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mohmehdi/Symmetry/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
