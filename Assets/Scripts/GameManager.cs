@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     public Text BestRecord;                     
     public Text ThisRecord;
+    public InputField CheatField;
     private int thisRecord=0;
     private int[] record;
 
@@ -88,6 +89,11 @@ public class GameManager : MonoBehaviour
     {
         Level = level;
         loadSceneBarPanel.SetActive(true);
+        StartCoroutine(LoadBar());
+    }
+    public void LoadNextLevel()    
+    {
+        Level++;
         StartCoroutine(LoadBar());
     }
     private IEnumerator LoadBar()       //do loading opperation and set Slider value
@@ -610,7 +616,28 @@ public class GameManager : MonoBehaviour
             yield return null;                                          //this line break while loop and do next loop in next frame (-_-)  
         }
     }
-    
+
+    public void Cheat()
+    {
+        if (CheatField.text == "Cheat to Unlock All Levels...")
+        {
+            int[] tmp = new int[50];
+            for (int i = 0; i < 10; i++)
+            {
+                tmp[i] = -1;
+            }
+            SaveStatus.Save(tmp, 20);
+        }
+        if (CheatField.text == "Delete Save")
+        {
+            int[] tmp = new int[50];
+            for (int i = 0; i < 10; i++)
+            {
+                tmp[i] = -1;
+            }
+            SaveStatus.Save(tmp, 1);
+        }
+    }
      public  void Quit()
     {
          Application.Quit();
