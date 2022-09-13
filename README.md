@@ -1,11 +1,16 @@
 # Symmetry
- 
-Game is available on : [itch io](https://mohmehdi.itch.io/symmetry)        
-for   
-*Linux   
-*Windows   
-*Android   
-*Web   
+
+![SYM](https://user-images.githubusercontent.com/52382093/190011739-c8e1a83b-9810-4785-826b-696f8be1bd8a.gif)
+
+
+<details>
+  <summary>Spoiler, this is the last level</summary>
+  
+![image](https://user-images.githubusercontent.com/52382093/190009427-aa4ddfb2-7246-4700-a7c0-62fdaafec6ce.png)  
+</details>
+
+Game is available on : [itch](https://mohmehdi.itch.io/symmetry)        
+for Linux, Windows, Android, Web   
 
 ### Prerequisites
 
@@ -13,11 +18,11 @@ Unity3D
 
 ## How to Make New Levels
 
-there are 4 scenes
-* Main *
-* Levels *
-* DrawSave *
-* MakeLevel_Dev *    
+there are 4 scenes  
+- **Main**  
+- **Levels**  
+- **DrawSave**  
+- **MakeLevel Dev**      
     
 use MakeLevel_Dev to make new levels   
 after you finished drawing click save button (load it to make sure)     
