@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Collections;
+using UnityEditor;
 
 public class MGrid : MonoBehaviour
 {
@@ -75,8 +76,9 @@ public class MGrid : MonoBehaviour
     }
     public void SaveLevelData_Dev()   //to make levels data : size and tiles matrix >> save as txt to use in gamemanager
     {
-        string path = "E:\\unity projects\\Symmetry\\LevelSave.txt";
-
+        
+        string path = Application.dataPath + "/LevelDataText/LevelSave.txt";
+        Debug.Log(path);
         File.Create(path).Close();
         string builder = "";
         for (int i = 0; i < Size; i++)
@@ -164,6 +166,7 @@ public class MGrid : MonoBehaviour
 
             draw_erase_voice.pitch = 1;
             draw_erase_voice.panStereo = 1;
+            draw_erase_voice.Stop();
             draw_erase_voice.Play();
         }
     }
@@ -191,6 +194,7 @@ public class MGrid : MonoBehaviour
 
                 draw_erase_voice.pitch = 1.1f;
                 draw_erase_voice.panStereo = -1;
+                draw_erase_voice.Stop();
                 draw_erase_voice.Play();
             }
         }
